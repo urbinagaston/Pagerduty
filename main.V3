@@ -1,0 +1,129 @@
+terraform {
+  required_version = ">= 1.0.0"
+
+  required_providers {
+    pagerduty = {
+      source  = "PagerDuty/pagerduty"
+      version = "~> 3.0"
+    }
+  }
+}
+
+provider "pagerduty" {
+  token = var.pagerduty_token
+}
+
+# Obtener los IDs de tus servicios existentes
+data "pagerduty_service" "aactions" {
+  name = "AActions"
+}
+
+data "pagerduty_service" "urbina" {
+  name = "Urbina"
+}
+
+# 1. Webhook V3: WebhookActionService
+resource "pagerduty_webhook_subscription" "webhook_action_service" {
+  description = "WebhookActionService"
+  type        = "webhook_subscription"
+  active      = true
+
+  delivery_method {
+    type = "http_delivery_method"
+    url  = "https://your_saas_endpoint.cloud/api/61/webhook/111tdTq1jacxbJyMgXc3Lwi4rEUNn7Ch#RBAAndresWebhook"
+  }
+
+  events = [
+    "incident.acknowledged",
+    "incident.annotated",
+    "incident.delegated",
+    "incident.escalated",
+    "incident.priority_updated",
+    "incident.reassigned",
+    "incident.resolved",
+    "incident.responder.added",
+    "incident.responder.replied",
+    "incident.status_update_published",
+    "incident.triggered",
+    "incident.unacknowledged"
+  ]
+
+  filter {
+    id   = data.pagerduty_service.aactions.id
+    type = "service_reference"
+  }
+}
+
+# 2. Webhook V3: AndresWebhook
+resource "pagerduty_webhook_subscription" "andres_webhook" {
+  description = "AndresWebhook"
+  type        = "webhook_subscription"
+  active      = true
+
+  delivery_method {
+    type = "http_delivery_method"
+    url  = "https://your_saas_endpoint.cloud/api/61/webhook/VW0tdTq1jacxbJyMgXc344i4rEUN777h#RBAAndresWebhook"
+
+    custom_header {
+      name  = "Oficina"
+      value = var.oficina_header_andres
+    }
+  }
+
+  events = [
+    "incident.acknowledged",
+    "incident.annotated",
+    "incident.delegated",
+    "incident.escalated",
+    "incident.priority_updated",
+    "incident.reassigned",
+    "incident.resolved",
+    "incident.responder.added",
+    "incident.responder.replied",
+    "incident.status_update_published",
+    "incident.triggered",
+    "incident.unacknowledged"
+  ]
+
+  filter {
+    id   = data.pagerduty_service.urbina.id
+    type = "service_reference"
+  }
+}
+
+# 3. Webhook V3: NEWwebhook
+resource "pagerduty_webhook_subscription" "new_webhook" {
+  description = "NEWwebhook"
+  type        = "webhook_subscription"
+  active      = true
+
+  delivery_method {
+    type = "http_delivery_method"
+    url  = "https://your_saas_endpoint.cloud/api/61/webhook/555VwX4e9zDS6eaUNmwjrUAGfevXw111#PdWebhookTest"
+
+    custom_header {
+      name  = "Oficina"
+      value = var.oficina_header_new
+    }
+  }
+
+  events = [
+    "incident.acknowledged",
+    "incident.annotated",
+    "incident.delegated",
+    "incident.escalated",
+    "incident.priority_updated",
+    "incident.reassigned",
+    "incident.resolved",
+    "incident.responder.added",
+    "incident.responder.replied",
+    "incident.status_update_published",
+    "incident.triggered",
+    "incident.unacknowledged"
+  ]
+
+  filter {
+    id   = data.pagerduty_service.urbina.id
+    type = "service_reference"
+  }
+}
