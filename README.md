@@ -15,7 +15,7 @@ Before running this demo, make sure you have:
 
 ## ⚙️ Configuration & Variables
 
-All sensitive input values are supplied via a `terraform.tfvars` file (excluded from version control via `.gitignore` for security).
+All sensitive input values are supplied via a `terraform.tfvars` file (excluded from version control via `.gitignore` for security). A little exceptions are the url webhooks on main.tf
 
 1. Clone this repository:
    ```bash
